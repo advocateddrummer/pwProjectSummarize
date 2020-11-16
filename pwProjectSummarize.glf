@@ -117,8 +117,9 @@ if { [string match "*.pw" $pwFile] } {
       set sourceBeginDecay [$s getBeginDecay]
       set sourceEndSpacing [$s getEndSpacing]
       set sourceEndDecay [$s getEndDecay]
+      set sourceDescription [$s getDescription]
       # TODO: I am not sure this handles all types of sources correctly.
-      set sourceString "\tSource Name: $sourceName, Type: $sourceType, Begin Spacing: $sourceBeginSpacing, Begin Decay $sourceBeginDecay"
+      set sourceString "\tSource Name: $sourceName, Description: $sourceDescription, Type: $sourceType, Begin Spacing: $sourceBeginSpacing, Begin Decay $sourceBeginDecay"
       if { $sourceType != "Constant" } { append sourceString " End Spacing: $sourceEndSpacing, End Decay $sourceEndDecay" }
       puts $sourceString
     }
