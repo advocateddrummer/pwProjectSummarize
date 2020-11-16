@@ -3,6 +3,7 @@ package require PWI_Glyph
 set pwFile [lindex $argv 0]
 
 if { [string match "*.pw" $pwFile] } {
+  puts "\n\t***********************************"
   puts "\tProject filename: $pwFile"
   pw::Application reset
   pw::Application load "$pwFile"
@@ -16,7 +17,7 @@ if { [string match "*.pw" $pwFile] } {
   puts "\tCAE Solver: $caeSolver"
   puts "\tCAE Dimension: $caeDim"
 
-  puts "\t***********************************"
+  puts "\n\t-----------------------------------"
   set all [pw::Grid getAll]
   if { $caeDim == "3D" } {
     set nBlocks [pw::Grid getCount -type pw::Block]
@@ -40,10 +41,74 @@ if { [string match "*.pw" $pwFile] } {
   puts "\tNumber of Hexes: [pw::Grid getElementCount Hex]"
   #puts "\tpw::GridEntity.getElementCount: [$pw::GridEntity.getElementCount]"
   puts "\tDefault Decay Rate: [pw::GridEntity getDefault SizeFieldDecay]"
+  puts "\t-----------------------------------"
+
+  puts "\n\tBlock Information"
+  puts "\t-----------------------------------"
+  foreach blk [pw::Grid getAll -type pw::Block] {
+    set blkName [$blk getName]
+    puts "\tBlock: $blkName"
+
+    set blkAlgo [$blk getUnstructuredSolverAttribute InteriorAlgorithm]
+    puts "\t\tInterior Algorithm: $blkAlgo"
+    puts "\t\t==================================="
+    # This is a bit kludge, but it is a way to only report these values if they
+    # have been changed from the application default.
+    set tmp [$blk getUnstructuredSolverAttribute EdgeMaximumLength]
+    if { $tmp != "0.0" } { puts "\t\tMax Edge Length:         $tmp" }
+    set tmp [$blk getUnstructuredSolverAttribute EdgeMinimumLength]
+    if { $tmp != "0.0" } { puts "\t\tMin Edge Length:         $tmp" }
+    set tmp [$blk getUnstructuredSolverAttribute PyramidMinimumHeight]
+    if { $tmp != "0.0" } { puts "\t\tMin Pyramid Height:      $tmp" }
+    set tmp [$blk getUnstructuredSolverAttribute PyramidMaximumHeight]
+    if { $tmp != "0.0" } { puts "\t\tMax Pyramid Height:      $tmp" }
+    puts "\t\tPyramid Aspect Ratio:    [$blk getUnstructuredSolverAttribute PyramidAspectRatio]"
+    puts "\t\tBoundary Decay Rate:     [$blk getUnstructuredSolverAttribute BoundaryDecay]"
+
+    if { $blkAlgo == "Voxel" } {
+      puts "\t\tVoxel Min Edge:          [$blk getUnstructuredSolverAttribute VoxelMinimumSize] (Automatic: [$blk getAutomaticVoxelMinimumSize])"
+      puts "\t\tVoxel Max Edge:          [$blk getUnstructuredSolverAttribute VoxelMaximumSize] (Automatic: [$blk getAutomaticVoxelMaximumSize])"
+      puts "\t\tVoxel Transition Layers: [$blk getUnstructuredSolverAttribute VoxelTransitionLayers]"
+      puts "\t\tVoxel Alignment:         [$blk getUnstructuredSolverAttribute VoxelAlignment]"
+    } else {
+      puts "\t\tError: Block Algortithm not known: \[$blkAlgo\]"
+    }
+    puts "\t\t==================================="
+
+      if { [$blk getUnstructuredSolverAttribute TRexMaximumLayers] == "0" } {
+      puts "\t\t$blk is not a Trex block..."
+    } else {
+      #puts "\tTrex Maximum Layers:   [$blk getUnstructuredSolverAttribute TRexMaximumLayers] ([$blk getUnstructuredSolverAttribute TRexFullLayers] full layers)"
+      puts "\t\tTrex Maximum/Full Layers: [$blk getUnstructuredSolverAttribute TRexMaximumLayers]/[$blk getUnstructuredSolverAttribute TRexFullLayers]"
+      puts "\t\tTrex Growth Rate:         [$blk getUnstructuredSolverAttribute TRexGrowthRate]"
+      puts "\t\tTrex Push Attributes:     [$blk getUnstructuredSolverAttribute TRexPushAttributes]"
+      puts "\t\tTrex Cell Types:          [$blk getUnstructuredSolverAttribute TRexCellType]"
+      puts "\t\tTrex Collision Buffer:    [$blk getUnstructuredSolverAttribute TRexCollisionBuffer]"
+      puts "\t\tTrex Isotropic Height:    [$blk getUnstructuredSolverAttribute TRexIsotropicHeight]"
+    }
+
+    # This is also kludgey, there seems to be no way, as of V18.4R2, to get
+    # included sources or include sources via Glyph. So, I am doing it
+    # backwards for now.
+    #set blkSources [$blk getIncludedSources]
+    #puts "\t$blkName contains [llength $blkSources] source entities"
+    set excludedBlkSources [$blk getExcludedSources]
+    if { [llength $excludedBlkSources] != "0" } {
+      puts -nonewline "\t\t$blkName excludes [llength $excludedBlkSources] sources:"
+      foreach s $excludedBlkSources {
+        puts -nonewline " [$s getName]"
+      }
+      puts ""
+    } else {
+      puts "\t\t$blkName includes all sources"
+    }
+  }
+  puts "\t-----------------------------------"
 
   set numSources [pw::Source getCount]
   if { $numSources > "0" } {
     puts "\n\tSource Information"
+    puts "\t-----------------------------------"
     puts "\tThere are $numSources sources"
     foreach s [pw::Source getAll] {
       set sourceName [$s getName]
@@ -58,8 +123,10 @@ if { [string match "*.pw" $pwFile] } {
       puts $sourceString
     }
   }
+  puts "\t-----------------------------------"
 
   puts "\n\tTrex Boundary Conditions"
+  puts "\t-----------------------------------"
   set trexConditions [pw::TRexCondition getNames]
   #puts "\ttrexConditions: $trexConditions"
   foreach t $trexConditions {
@@ -76,8 +143,10 @@ if { [string match "*.pw" $pwFile] } {
     set tBcAdapt [$tBC getAdaptation]
     puts "\tTrex Boundary Condition Name: $tBcName, Type: $tBcType, Value: $tBcValue, Adapt: $tBcAdapt"
   }
+  puts "\t-----------------------------------"
 
   puts "\n\t$caeSolver Boundary Conditions"
+  puts "\t-----------------------------------"
   set bcs [pw::BoundaryCondition getNames]
   puts "\tBCs: $bcs"
   foreach b $bcs {
@@ -103,6 +172,7 @@ if { [string match "*.pw" $pwFile] } {
     #puts "$bc: \[$bcScalarName:$bcScalarValue\]"
   }
   #puts "\tBC Physical Types: [pw::BoundaryCondition getPhysicalTypes]"
+  puts "\t-----------------------------------"
   puts "\t***********************************"
 
 } else {
