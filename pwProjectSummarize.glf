@@ -17,7 +17,16 @@ if { [string match "*.pw" $pwFile] } {
   puts "\tCAE Solver: $caeSolver"
   puts "\tCAE Dimension: $caeDim"
 
-  puts "\n\t-----------------------------------"
+  puts "\n\tDefaults"
+  puts "\t-----------------------------------"
+  puts "\tDecay Rate:                    [pw::GridEntity getDefault SizeFieldDecay]"
+  puts "\tSize Field Background Spacing: [pw::GridEntity getDefault SizeFieldBackgroundSpacing]"
+  puts "\tSize Field Calculation Method: [pw::GridEntity getDefault SizeFieldCalculationMethod]"
+  puts "\tIsometric Cell Type:           [pw::DomainUnstructured getDefault IsoCellType]"
+  puts "\tDomain Trex Cell Type:         [pw::DomainUnstructured getDefault TRexCellType]"
+  puts "\tInterior Algorithm:            [pw::BlockUnstructured getDefault InteriorAlgorithm]"
+  puts "\tBlock Trex Cell Type:          [pw::BlockUnstructured getDefault TRexCellType]"
+
   set all [pw::Grid getAll]
   if { $caeDim == "3D" } {
     set nBlocks [pw::Grid getCount -type pw::Block]
@@ -149,7 +158,6 @@ if { [string match "*.pw" $pwFile] } {
   puts "\n\t$caeSolver Boundary Conditions"
   puts "\t-----------------------------------"
   set bcs [pw::BoundaryCondition getNames]
-  puts "\tBCs: $bcs"
   foreach b $bcs {
     set bc [pw::BoundaryCondition getByName $b]
     set bcNumEnties [ $bc getEntityCount -visibility true ]
