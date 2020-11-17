@@ -51,7 +51,6 @@ if { [string match "*.pw" $pwFile] } {
   puts "\tNumber of Prisms:         [pw::Grid getElementCount Prism]"
   puts "\tNumber of Hexes:          [pw::Grid getElementCount Hex]"
   #puts "\tpw::GridEntity.getElementCount: [$pw::GridEntity.getElementCount]"
-  puts "\tDefault Decay Rate: [pw::GridEntity getDefault SizeFieldDecay]"
   puts "\t-----------------------------------"
 
   puts "\n\tBlock Information"
