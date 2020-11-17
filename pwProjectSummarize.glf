@@ -27,27 +27,29 @@ if { [string match "*.pw" $pwFile] } {
   puts "\tInterior Algorithm:            [pw::BlockUnstructured getDefault InteriorAlgorithm]"
   puts "\tBlock Trex Cell Type:          [pw::BlockUnstructured getDefault TRexCellType]"
 
+  puts "\n\tElement Counts"
+  puts "\t-----------------------------------"
   set all [pw::Grid getAll]
   if { $caeDim == "3D" } {
     set nBlocks [pw::Grid getCount -type pw::Block]
-    puts "\tNumber of Blocks: $nBlocks"
+    puts "\tNumber of Blocks:         $nBlocks"
   } elseif { $caeDim == "2D" } {
     set nDomains [pw::Grid getCount -type pw::Domain]
     puts "\tNumber of Domains: $nDomains"
   } else {
     puts "\tError: CAE Dimension is unsupported: \[$caeDim\]"
   }
-  puts "\tNumber of Points: [pw::Grid getPointCount]"
-  puts "\tNumber of Triangles: [pw::Grid getElementCount Triangle -skip3DCells]"
-  puts "\tNumber of Quads: [pw::Grid getElementCount Quad -skip3DCells]"
+  puts "\tNumber of Points:         [pw::Grid getPointCount]"
+  puts "\tNumber of Triangles:      [pw::Grid getElementCount Triangle -skip3DCells]"
+  puts "\tNumber of Quads:          [pw::Grid getElementCount Quad -skip3DCells]"
   # This doesn't take into account points shared amongst multiple domains and
   # thus over counts the number of surface points.
   #puts "\tNumber of Surface Points: [pw::Grid getPointCount Domain]"
   puts "\tNumber of Surface Points: [pw::GridEntity getUniquePointCount -type pw::Domain]"
-  puts "\tNumber of Tets: [pw::Grid getElementCount Tet]"
-  puts "\tNumber of Pyramids: [pw::Grid getElementCount Pyramid]"
-  puts "\tNumber of Prisms: [pw::Grid getElementCount Prism]"
-  puts "\tNumber of Hexes: [pw::Grid getElementCount Hex]"
+  puts "\tNumber of Tets:           [pw::Grid getElementCount Tet]"
+  puts "\tNumber of Pyramids:       [pw::Grid getElementCount Pyramid]"
+  puts "\tNumber of Prisms:         [pw::Grid getElementCount Prism]"
+  puts "\tNumber of Hexes:          [pw::Grid getElementCount Hex]"
   #puts "\tpw::GridEntity.getElementCount: [$pw::GridEntity.getElementCount]"
   puts "\tDefault Decay Rate: [pw::GridEntity getDefault SizeFieldDecay]"
   puts "\t-----------------------------------"
