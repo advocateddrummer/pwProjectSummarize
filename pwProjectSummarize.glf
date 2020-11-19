@@ -93,8 +93,6 @@ if { [string match "*.pw" $pwFile] } {
         puts "\t\tVoxel Max Edge:          [$blk getUnstructuredSolverAttribute VoxelMaximumSize] (Automatic: [$blk getAutomaticVoxelMaximumSize])"
         puts "\t\tVoxel Transition Layers: [$blk getUnstructuredSolverAttribute VoxelTransitionLayers]"
         puts "\t\tVoxel Alignment:         [$blk getUnstructuredSolverAttribute VoxelAlignment]"
-      } else {
-        puts "\t\tError: Block Algortithm not known: \[$blkAlgo\]"
       }
       puts "\t\t==================================="
 
